@@ -28,16 +28,18 @@ namespace Vehicle.WebAPI
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; private set; }
+        public ILifetimeScope AutofacContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<Vehicle.DAL.VehicleContext>(options =>
+          options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
+
             services.AddControllers();
 
-            services.AddDbContext<VehicleContext>(options =>
-           options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
-
+           
         }
 
         //Container Builder for Autofac 
@@ -74,6 +76,13 @@ namespace Vehicle.WebAPI
             {
                 endpoints.MapControllers();
             });
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
     }
 }

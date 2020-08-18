@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Vehicle.Common\Vehicle.Common.csproj" />
     <ProjectReference Include="..\Vehicle.DAL\Vehicle.DAL.csproj" />
     <ProjectReference Include="..\Vehicle.Model.Common\Vehicle.Model.Common.csproj" />
     <ProjectReference Include="..\Vehicle.Repository.Common\Vehicle.Repository.Common.csproj" />
