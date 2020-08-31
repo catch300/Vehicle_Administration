@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Vehicle.Common\Vehicle.Common.csproj" />
     <ProjectReference Include="..\Vehicle.DAL\Vehicle.DAL.csproj" />
     <ProjectReference Include="..\Vehicle.Model\Vehicle.Model.csproj" />

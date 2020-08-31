@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Vehicle.Model;
 using Vehicle.Model.Common;
+using Vehicle.WebAPI.ViewModels;
 
 namespace Vehicle.WebAPI.MappingProfile
 {
@@ -12,7 +13,7 @@ namespace Vehicle.WebAPI.MappingProfile
     {
         public MappingProfile( )
         {
-            CreateMap<IVehicleMakeViewModel, IVehicleMake>().ReverseMap();
+            CreateMap<VehicleMakeVM, IVehicleMake>().ReverseMap();
 
             //CreateMap<IVehicleModelViewModel, IVehicleModel>().ReverseMap();
 

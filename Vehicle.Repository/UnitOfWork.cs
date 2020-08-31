@@ -13,53 +13,65 @@ namespace Vehicle.Repository
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly VehicleContext _context;
-        public Dictionary<Type, object> repositories = new Dictionary<Type, object>();
+        public Dictionary<string, object> repositories;
 
 
-        public UnitOfWork(VehicleContext context )
+        public UnitOfWork(VehicleContext context)
         {
             _context = context;
         }
 
         
         //VehicleMakeRepository
-        public IRepository<T> VehicleMakeRepository<T>() where T : class
+        public IRepository<T> Repository<T>( ) where T : class
         {
-
-            if (repositories.Keys.Contains(typeof(T)) == true)
+            if (repositories == null)
             {
-                return repositories[typeof(T)] as IRepository<T>;
+                repositories = new Dictionary<string, object>();
             }
-            IRepository<T> repo = new Repository<T>(_context);
-            repositories.Add(typeof(T), repo);
-            return repo;
-            //get
+            var type = typeof(T).Name;
+            if(!repositories.ContainsKey(type))
+            {
+                var repositoryType = typeof(Repository<>);
+                var repositoryInstance =
+                    Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _context);
+                repositories.Add(type, repositoryInstance);
+            }
+
+            return (Repository<T>)repositories[type];
+
+
+            //if (repositories.Keys.Contains(typeof(T)) == true)
             //{
-            //    if (this.vehicleMakeRepository == null)
-            //    {
-            //        this.vehicleMakeRepository = new Repository<VehicleMake>(_context);
-            //    }
-            //    return vehicleMakeRepository;
+            //    return repositories[typeof(T)] as IRepository<T>;
             //}
+            //IRepository<T> repo = new Repository<T>(_context);
+            //repositories.Add(typeof(T), repo);
+            //return repo;
+           
 
         }
+        //public IRepository vehicleMakeRepository
+        //{
+        //    get
+        //    {
+        //       if (this.vehicleMakeRepository == null)
+        //    {
+        //        this.vehicleMakeRepository = new Repository<VehicleMake>(_context);
+        //    }
+        //    return vehicleMakeRepository;
+        //    }
+        //}
 
-       
 
 
 
         //VehicleModelRepository
 
 
-        public async Task<int> CommitAsync()
+        public async Task CommitAsync()
         {
-            int result = 0;
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                result = await _context.SaveChangesAsync();
-                scope.Complete();
-            }
-            return result;
+            await _context.SaveChangesAsync();
         }
 
         private bool disposed = false;

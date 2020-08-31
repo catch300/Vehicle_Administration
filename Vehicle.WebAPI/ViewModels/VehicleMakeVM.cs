@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Vehicle.Model.Common;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Vehicle.Model
+namespace Vehicle.WebAPI.ViewModels
 {
-    public class VehicleMakeViewModel : IVehicleMakeViewModel
+    public class VehicleMakeVM
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Vehicle.Common.PagingFilteringSorting
 {
-    public class EntityList<TEntity> : IEntityList<TEntity> where TEntity : class 
+    public class EntityList<TEntity> : IPaginatedList<TEntity> where TEntity : class
     {
         public int TotalCount { get; set; }
         public int FilteredCount { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -8,67 +9,155 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vehicle.Common.PagingFilteringSorting;
 using Vehicle.DAL;
+using Vehicle.DAL.Entities;
+
 using Vehicle.Repository.Common;
 
 namespace Vehicle.Repository
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private readonly VehicleContext _context;
+        public VehicleContext _context;
         internal DbSet<TEntity> dbSet;
 
         public Repository(VehicleContext context)
         {
             _context = context;
-            dbSet = context.Set<TEntity>();
+            this.dbSet = context.Set<TEntity>();
         }
 
-
-
         //GET ALL ENTITIES
-        public async Task<IEntityList<TEntity>> GetAll(
-                Expression<Func<TEntity, bool>> filter = null,
-                Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-                IEnumerable<Expression<Func<TEntity, object>>> includes = null,
-                int? page = null, int? pageSize = null)
+        public async Task<IEnumerable<TEntity>> GetAll( )
         {
+            return await GetAll(null, null, null, null, null);
+        }
 
-            var query = _context.Set<TEntity>().AsQueryable();
-            if (includes != null)
-            {
-                query = includes.Aggregate(query, (current, include) => current.Include(include));
-            }
+        public async Task<IEnumerable<TEntity>> GetAll(
+            Expression<Func<TEntity, bool>> filter = null)
+        {
+            return await GetAll(filter, null, null, null, null);
+        }
 
-            int totalCount = query.Count();
-            int filteredCount = totalCount;
+        public async Task<IEnumerable<TEntity>> GetAll(
+            Expression<Func<TEntity, bool>> filter = null,
+            string[] includePaths = null)
+        {
+            return await GetAll(filter, includePaths, null, null, null);
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAll(
+           Expression<Func<TEntity, bool>> filter = null,
+           string[] includePaths = null,
+           int? page = null,
+           int? pageSize = null,
+           params SortExpression<TEntity>[] sortExpressions)
+        {
+            IQueryable<TEntity> query = dbSet;
+            ;
 
             if (filter != null)
             {
                 query = query.Where(filter);
-                filteredCount = query.Count();
             }
 
-            if (orderBy != null)
+            if (includePaths != null)
             {
-                query = orderBy(query);
-            }
-            if (page != null && pageSize != null)
-            {
-                query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
-                ;
+                for (var i = 0; i < includePaths.Count(); i++)
+                {
+                    query = query.Include(includePaths[i]);
+                }
             }
 
-            var pageData = await query.ToListAsync();
-
-            IEntityList<TEntity> listOfEntities = new EntityList<TEntity>
+            if (sortExpressions != null)
             {
-                TotalCount = totalCount,
-                FilteredCount = filteredCount,
-                PageData = pageData,
-            };
+                IOrderedQueryable<TEntity> orderedQuery = null;
+                for (var i = 0; i < sortExpressions.Count(); i++)
+                {
+                    if (i == 0)
+                    {
+                        if (sortExpressions[i].SortDirection == ListSortDirection.Ascending)
+                        {
+                            orderedQuery = query.OrderBy(sortExpressions[i].SortBy);
+                        }
+                        else
+                        {
+                            orderedQuery = query.OrderByDescending(sortExpressions[i].SortBy);
+                        }
+                    }
+                    else
+                    {
+                        if (sortExpressions[i].SortDirection == ListSortDirection.Ascending)
+                        {
+                            orderedQuery = orderedQuery.ThenBy(sortExpressions[i].SortBy);
+                        }
+                        else
+                        {
+                            orderedQuery = orderedQuery.ThenByDescending(sortExpressions[i].SortBy);
+                        }
 
-            return listOfEntities;
+                    }
+                }
+
+                if (page != null)
+                {
+                    query = orderedQuery.Skip(((int)page - 1) * (int)pageSize);
+                }
+            }
+
+            if (pageSize != null)
+            {
+                query = query.Take((int)pageSize);
+            }
+
+            return await query.ToListAsync();
         }
+
+        //GET ALL ENTITIES
+
+
+        //public async Task<IPaginatedList<TEntity>> GetAll(
+        //        Expression<Func<TEntity, bool>> filter = null,
+        //        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+        //        IEnumerable<Expression<Func<TEntity, object>>> includes = null,
+        //        int? page = null, int? pageSize = null)
+        //{
+
+        //    var query = dbSet.AsQueryable();
+        //    if (includes != null)
+        //    {
+        //        query = includes.Aggregate(query, (current, include) => current.Include(include));
+        //    }
+
+        //    int totalCount = query.Count();
+        //    int filteredCount = totalCount;
+
+        //    if (filter != null)
+        //    {
+        //        query = query.Where(filter);
+        //        filteredCount = query.Count();
+        //    }
+
+        //    if (orderBy != null)
+        //    {
+        //        query = orderBy(query);
+        //    }
+        //    if (page != null && pageSize != null)
+        //    {
+        //        query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
+        //        ;
+        //    }
+
+        //    var pageData = await query.ToListAsync();
+
+        //    IPaginatedList<TEntity> listOfEntities = new EntityList<TEntity>
+        //    {
+        //        TotalCount = totalCount,
+        //        FilteredCount = filteredCount,
+        //        PageData = pageData,
+        //    };
+
+        //    return listOfEntities;
+        //}
 
         //GET ENTITY BY ID
         public async Task<TEntity> GetById(object id)
@@ -93,17 +182,30 @@ namespace Vehicle.Repository
         }
 
         //UPDATE ENTITY
-        public async Task<int> Update(TEntity entityToUpdate)
+        public async Task<TEntity> Update(TEntity entityToUpdate, object Id)
         {
+            _context.Entry(entityToUpdate).State = EntityState.Modified;
+            _context.Set<TEntity>().Attach(entityToUpdate);
 
-            EntityEntry dbEntityEntry = _context.Entry(entityToUpdate);
-            if (dbEntityEntry.State == EntityState.Detached)
+            if (entityToUpdate == null)
+                return null;
+            TEntity exist = await _context.Set<TEntity>().FindAsync(Id);
+            if (exist != null)
             {
-                dbSet.Attach(entityToUpdate);
+                _context.Entry(exist).CurrentValues.SetValues(entityToUpdate);
             }
-            dbEntityEntry.State = EntityState.Modified;
+            return exist;
 
-            return await Task.FromResult(1);
+
+
+            //EntityEntry dbEntityEntry = _context.Entry(entityToUpdate);
+            //if (dbEntityEntry.State == EntityState.Detached)
+            //{
+            //    dbSet.Attach(entityToUpdate);
+            //}
+            //dbEntityEntry.State = EntityState.Modified;
+
+            //return await Task.FromResult(1);
 
         }
 
@@ -132,6 +234,30 @@ namespace Vehicle.Repository
                 dbSet.Remove(entityToDelete);
             }
             return await Task.FromResult(1);
+        }
+
+        private enum OrderByType
+        {
+
+            Ascending,
+            Descending
+        }
+        public void Dispose( )
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+            }
         }
     }
 }

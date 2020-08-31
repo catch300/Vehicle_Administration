@@ -18,36 +18,37 @@ using Vehicle.DAL;
 using Microsoft.EntityFrameworkCore;
 using Vehicle.Model;
 using Vehicle.Model.Common;
+using Vehicle.Repository;
+using Vehicle.Repository.Common;
 
 namespace Vehicle.WebAPI
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; private set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; private set; }
-        public ILifetimeScope AutofacContainer { get; private set; }
+       
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Vehicle.DAL.VehicleContext>(options =>
-          options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
+
+            //services.AddDbContext<VehicleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
+            services.AddEntityFrameworkSqlServer()
+    .AddDbContext<VehicleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
 
             services.AddControllers();
 
-           
         }
 
         //Container Builder for Autofac 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-
-            builder.RegisterType<VehicleMake>().As<IVehicleMake>();
-
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
             //builder.RegisterType<VehicleMakeService>().As<IVehicleMakeService>();
             //builder.RegisterType<VehicleModelService>().As<IVehicleModelService>();
             //builder.RegisterType<Filtering>().As<IFiltering>();

@@ -7,10 +7,11 @@ using Vehicle.Repository.Common;
 
 namespace Vehicle.Repository.Common
 {
-    public interface IUnitOfWork 
+    public interface IUnitOfWork : IDisposable
     {
-        IRepository<T> VehicleMakeRepository<T>( ) where T : class;
-        Task<int> CommitAsync();
+
+        IRepository<T> Repository<T>( ) where T : class;
+        Task CommitAsync();
         
     }
 }
