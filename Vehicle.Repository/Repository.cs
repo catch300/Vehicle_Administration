@@ -182,30 +182,17 @@ namespace Vehicle.Repository
         }
 
         //UPDATE ENTITY
-        public async Task<TEntity> Update(TEntity entityToUpdate, object Id)
+        public async Task<int> Update(TEntity entityToUpdate)
         {
-            _context.Entry(entityToUpdate).State = EntityState.Modified;
-            _context.Set<TEntity>().Attach(entityToUpdate);
 
-            if (entityToUpdate == null)
-                return null;
-            TEntity exist = await _context.Set<TEntity>().FindAsync(Id);
-            if (exist != null)
+            EntityEntry dbEntityEntry = _context.Entry(entityToUpdate);
+            if (dbEntityEntry.State == EntityState.Detached)
             {
-                _context.Entry(exist).CurrentValues.SetValues(entityToUpdate);
+                dbSet.Attach(entityToUpdate);
             }
-            return exist;
+            dbEntityEntry.State = EntityState.Modified;
 
-
-
-            //EntityEntry dbEntityEntry = _context.Entry(entityToUpdate);
-            //if (dbEntityEntry.State == EntityState.Detached)
-            //{
-            //    dbSet.Attach(entityToUpdate);
-            //}
-            //dbEntityEntry.State = EntityState.Modified;
-
-            //return await Task.FromResult(1);
+            return await Task.FromResult(1);
 
         }
 

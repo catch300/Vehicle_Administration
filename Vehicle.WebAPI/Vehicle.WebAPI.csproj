@@ -25,6 +25,8 @@
     <ProjectReference Include="..\Vehicle.Model\Vehicle.Model.csproj" />
     <ProjectReference Include="..\Vehicle.Repository.Common\Vehicle.Repository.Common.csproj" />
     <ProjectReference Include="..\Vehicle.Repository\Vehicle.Repository.csproj" />
+    <ProjectReference Include="..\Vehicle.Service.Common\Vehicle.Service.Common.csproj" />
+    <ProjectReference Include="..\Vehicle.Service\Vehicle.Service.csproj" />
   </ItemGroup>
 
 

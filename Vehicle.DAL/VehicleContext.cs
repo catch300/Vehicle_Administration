@@ -1,8 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Vehicle.Model;
-
-
+using Vehicle.Model.Common;
 
 namespace Vehicle.DAL
 {

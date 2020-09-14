@@ -37,7 +37,7 @@ namespace Vehicle.Repository.Common
 
         Task<int> Add(TEntity entityToInsert);
 
-        Task<TEntity> Update(TEntity entityToUpdate, object Id);
+        Task<int> Update(TEntity entityToUpdate);
 
         Task<int> Delete(object id);
         Task<int> Delete(TEntity entityToDelete);

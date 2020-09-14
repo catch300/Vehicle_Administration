@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vehicle.Repository.Common\Vehicle.Repository.Common.csproj" />
+    <ProjectReference Include="..\Vehicle.Service.Common\Vehicle.Service.Common.csproj" />
+  </ItemGroup>
+
+</Project>

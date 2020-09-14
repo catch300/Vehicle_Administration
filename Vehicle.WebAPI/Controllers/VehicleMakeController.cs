@@ -14,6 +14,7 @@ using Vehicle.Repository;
 using Vehicle.Repository.Common;
 using Vehicle.WebAPI.ViewModels;
 using Vehicle.Common.PagingFilteringSorting;
+using Vehicle.Service.Common;
 
 namespace Vehicle.WebAPI.Controllers
 {
@@ -22,7 +23,9 @@ namespace Vehicle.WebAPI.Controllers
     public class VehicleMakeController : ControllerBase
     {
         private readonly IMapper _mapper;
+
         private readonly IUnitOfWork _unitOfWork;
+
 
         public VehicleMakeController(IMapper mapper, IUnitOfWork unitOfWork)
         {
@@ -32,21 +35,21 @@ namespace Vehicle.WebAPI.Controllers
 
         // GET: api/VehicleMake
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VehicleMakeVM>>> GetVehicleMakes()
+        public async Task<IEnumerable<VehicleMake>> GetVehicleMakes()
         {
             //using var unitOfWork = _unitOfWorkFactory.Create();
 
             //var listOfvehicleMakes = await unitOfWork.Repository<VehicleMakeVM>().GetAll();
             var vehicleMakes = await _unitOfWork.Repository<VehicleMake>().GetAll();
-            var mapper = _mapper.Map<IEnumerable<VehicleMakeVM>>(vehicleMakes);
+            //var mapper = _mapper.Map<IEnumerable<VehicleMakeVM>>(vehicleMakes);
 
 
-            return mapper.ToList();
+            return vehicleMakes;
         }
 
         // GET: api/VehicleMake/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<VehicleMakeVM>> GetVehicleMake(int id)
+        public async Task<IVehicleMake> GetVehicleMake(int id)
         {
             //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
             var vehicleMakeID = await _unitOfWork.Repository<VehicleMake>().GetById(id);
@@ -55,10 +58,10 @@ namespace Vehicle.WebAPI.Controllers
             
             if (mapper == null)
             {
-                return NotFound();
+                throw new ArgumentNullException("vehicleMakeID");
             }
 
-            return mapper;
+            return vehicleMakeID;
         }
 
         // PUT: api/VehicleMake/5
@@ -73,8 +76,8 @@ namespace Vehicle.WebAPI.Controllers
                 return BadRequest();
             }
             
-            await _unitOfWork.Repository<VehicleMake>().Update(vehicleMake,id );
-
+            await _unitOfWork.Repository<VehicleMake>().Update(vehicleMake );
+           
             try
             {
                await _unitOfWork.CommitAsync();
@@ -91,7 +94,7 @@ namespace Vehicle.WebAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<VehicleMake>> PostVehicleMake(VehicleMake vehicleMake)
+        public async Task<ActionResult<IVehicleMake>> PostVehicleMake(VehicleMake vehicleMake)
         {
             //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
             await _unitOfWork.Repository<VehicleMake>().Add(vehicleMake);
@@ -102,23 +105,25 @@ namespace Vehicle.WebAPI.Controllers
 
         // DELETE: api/VehicleMake/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<VehicleMake>> DeleteVehicleMake(int id)
+        public async Task<IVehicleMake> DeleteVehicleMake(int id)
         {
             //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
-            
+
 
             var vehicleMake = await _unitOfWork.Repository<VehicleMake>().GetById(id);
+
             if (vehicleMake == null)
             {
-                return NotFound();
+                throw new ArgumentNullException("IVehicleMake");
             }
 
             await _unitOfWork.Repository<VehicleMake>().Delete(vehicleMake);
             await _unitOfWork.CommitAsync();
-            
+
             return vehicleMake;
         }
-
         
+
+
     }
 }

@@ -20,6 +20,8 @@ using Vehicle.Model;
 using Vehicle.Model.Common;
 using Vehicle.Repository;
 using Vehicle.Repository.Common;
+using Vehicle.Service;
+using Vehicle.Service.Common;
 
 namespace Vehicle.WebAPI
 {
@@ -48,7 +50,10 @@ namespace Vehicle.WebAPI
         //Container Builder for Autofac 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterType<VehicleMake>().As<IVehicleMake>();
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<VehicleMakeService>().As<IVehicleMakeService>();
+            builder.RegisterType<Repository<VehicleMake>>().As<IRepository<VehicleMake>>();
             //builder.RegisterType<VehicleMakeService>().As<IVehicleMakeService>();
             //builder.RegisterType<VehicleModelService>().As<IVehicleModelService>();
             //builder.RegisterType<Filtering>().As<IFiltering>();
@@ -56,7 +61,7 @@ namespace Vehicle.WebAPI
             //builder.RegisterType<PaginatedList<VehicleMakeVM>>().As<IPaginatedList<VehicleMakeVM>>();
             //builder.RegisterType<PaginatedList<VehicleModelVM>>().As<IPaginatedList<VehicleModelVM>>();
 
-            builder.AddAutoMapper(typeof(Startup).Assembly);
+            builder.AddAutoMapper(typeof(Startup).Assembly );
         }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
