@@ -17,16 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.Repository", "Vehic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.Repository.Common", "Vehicle.Repository.Common\Vehicle.Repository.Common.csproj", "{338A2C59-E7BE-4BEE-886E-7D5EEA71CBC0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2289508D-EDC8-4C4A-9EC6-B961EDF10B3C}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.Service", "Vehicle.Service\Vehicle.Service.csproj", "{B13B60D6-AFDE-4FFC-A1DF-9779E742F41F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.Service.Common", "Vehicle.Service.Common\Vehicle.Service.Common.csproj", "{31647B59-2A1A-4919-8628-B46C573C96BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vehicle.Repository.Tests", "Vehicle.Repository.Tests\Vehicle.Repository.Tests.csproj", "{81D54EE5-98EE-40AF-997B-A274A1EFB5BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vehicle.Repository.Tests", "Vehicle.Repository.Tests\Vehicle.Repository.Tests.csproj", "{81D54EE5-98EE-40AF-997B-A274A1EFB5BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

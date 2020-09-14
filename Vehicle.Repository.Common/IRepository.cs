@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Vehicle.Common.PagingFilteringSorting;
-using Vehicle.DAL.Entities;
 
 namespace Vehicle.Repository.Common
 {

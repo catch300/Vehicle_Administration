@@ -39,7 +39,6 @@ namespace Vehicle.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //services.AddDbContext<VehicleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
             services.AddEntityFrameworkSqlServer()
     .AddDbContext<VehicleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
 
@@ -54,12 +53,6 @@ namespace Vehicle.WebAPI
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
             builder.RegisterType<VehicleMakeService>().As<IVehicleMakeService>();
             builder.RegisterType<Repository<VehicleMake>>().As<IRepository<VehicleMake>>();
-            //builder.RegisterType<VehicleMakeService>().As<IVehicleMakeService>();
-            //builder.RegisterType<VehicleModelService>().As<IVehicleModelService>();
-            //builder.RegisterType<Filtering>().As<IFiltering>();
-            //builder.RegisterType<Sorting>().As<ISorting>();
-            //builder.RegisterType<PaginatedList<VehicleMakeVM>>().As<IPaginatedList<VehicleMakeVM>>();
-            //builder.RegisterType<PaginatedList<VehicleModelVM>>().As<IPaginatedList<VehicleModelVM>>();
 
             builder.AddAutoMapper(typeof(Startup).Assembly );
         }

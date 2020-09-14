@@ -39,35 +39,8 @@ namespace Vehicle.Repository
             }
 
             return (Repository<T>)repositories[type];
-
-
-            //if (repositories.Keys.Contains(typeof(T)) == true)
-            //{
-            //    return repositories[typeof(T)] as IRepository<T>;
-            //}
-            //IRepository<T> repo = new Repository<T>(_context);
-            //repositories.Add(typeof(T), repo);
-            //return repo;
-           
-
         }
-        //public IRepository vehicleMakeRepository
-        //{
-        //    get
-        //    {
-        //       if (this.vehicleMakeRepository == null)
-        //    {
-        //        this.vehicleMakeRepository = new Repository<VehicleMake>(_context);
-        //    }
-        //    return vehicleMakeRepository;
-        //    }
-        //}
-
-
-
-
-        //VehicleModelRepository
-
+     
 
         public async Task CommitAsync()
         {

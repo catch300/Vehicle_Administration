@@ -23,7 +23,6 @@ namespace Vehicle.WebAPI.Controllers
     public class VehicleMakeController : ControllerBase
     {
         private readonly IMapper _mapper;
-
         private readonly IUnitOfWork _unitOfWork;
 
 
@@ -35,33 +34,27 @@ namespace Vehicle.WebAPI.Controllers
 
         // GET: api/VehicleMake
         [HttpGet]
-        public async Task<IEnumerable<VehicleMake>> GetVehicleMakes()
+        public async Task<IEnumerable<VehicleMakeVM>> GetVehicleMakes()
         {
-            //using var unitOfWork = _unitOfWorkFactory.Create();
-
-            //var listOfvehicleMakes = await unitOfWork.Repository<VehicleMakeVM>().GetAll();
             var vehicleMakes = await _unitOfWork.Repository<VehicleMake>().GetAll();
-            //var mapper = _mapper.Map<IEnumerable<VehicleMakeVM>>(vehicleMakes);
+            var mapper = _mapper.Map<IEnumerable<VehicleMakeVM>>(vehicleMakes);
 
-
-            return vehicleMakes;
+            return mapper;
         }
 
         // GET: api/VehicleMake/5
         [HttpGet("{id}")]
-        public async Task<IVehicleMake> GetVehicleMake(int id)
+        public async Task<VehicleMakeVM> GetVehicleMake(int id)
         {
-            //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
             var vehicleMakeID = await _unitOfWork.Repository<VehicleMake>().GetById(id);
             var mapper = _mapper.Map<VehicleMakeVM>(vehicleMakeID);
 
-            
             if (mapper == null)
             {
                 throw new ArgumentNullException("vehicleMakeID");
             }
 
-            return vehicleMakeID;
+            return mapper;
         }
 
         // PUT: api/VehicleMake/5
@@ -70,7 +63,6 @@ namespace Vehicle.WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVehicleMake(int id, VehicleMake vehicleMake)
         {
-            //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
             if (id != vehicleMake.Id)
             {
                 return BadRequest();
@@ -96,7 +88,6 @@ namespace Vehicle.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<IVehicleMake>> PostVehicleMake(VehicleMake vehicleMake)
         {
-            //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
             await _unitOfWork.Repository<VehicleMake>().Add(vehicleMake);
             await _unitOfWork.CommitAsync();
 
@@ -107,14 +98,12 @@ namespace Vehicle.WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IVehicleMake> DeleteVehicleMake(int id)
         {
-            //using IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
-
-
-            var vehicleMake = await _unitOfWork.Repository<VehicleMake>().GetById(id);
+         
+           var vehicleMake = await _unitOfWork.Repository<VehicleMake>().GetById(id);
 
             if (vehicleMake == null)
             {
-                throw new ArgumentNullException("IVehicleMake");
+                throw new ArgumentNullException("VehicleMake");
             }
 
             await _unitOfWork.Repository<VehicleMake>().Delete(vehicleMake);

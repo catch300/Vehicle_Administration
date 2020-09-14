@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vehicle.Common.PagingFilteringSorting;
 using Vehicle.DAL;
-using Vehicle.DAL.Entities;
 
 using Vehicle.Repository.Common;
 
