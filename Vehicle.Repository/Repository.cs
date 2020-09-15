@@ -26,137 +26,48 @@ namespace Vehicle.Repository
         }
 
         //GET ALL ENTITIES
-        public async Task<IEnumerable<TEntity>> GetAll( )
+        public async Task<IPaginatedList<TEntity>> GetAll(
+                Expression<Func<TEntity, bool>> filter = null,
+                Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                IEnumerable<Expression<Func<TEntity, object>>> includes = null,
+                int? page = null, int? pageSize = null)
         {
-            return await GetAll(null, null, null, null, null);
-        }
 
-        public async Task<IEnumerable<TEntity>> GetAll(
-            Expression<Func<TEntity, bool>> filter = null)
-        {
-            return await GetAll(filter, null, null, null, null);
-        }
-
-        public async Task<IEnumerable<TEntity>> GetAll(
-            Expression<Func<TEntity, bool>> filter = null,
-            string[] includePaths = null)
-        {
-            return await GetAll(filter, includePaths, null, null, null);
-        }
-
-        public async Task<IEnumerable<TEntity>> GetAll(
-           Expression<Func<TEntity, bool>> filter = null,
-           string[] includePaths = null,
-           int? page = null,
-           int? pageSize = null,
-           params SortExpression<TEntity>[] sortExpressions)
-        {
-            IQueryable<TEntity> query = dbSet;
-            ;
-
+            var query = dbSet.AsQueryable();
+            if (includes != null)
+            {
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            }
+            
             if (filter != null)
             {
                 query = query.Where(filter);
             }
 
-            if (includePaths != null)
+            if (orderBy != null)
             {
-                for (var i = 0; i < includePaths.Count(); i++)
-                {
-                    query = query.Include(includePaths[i]);
-                }
+                query = orderBy(query);
+            }
+           
+            if (page != null && pageSize != null)
+            {
+                query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
             }
 
-            if (sortExpressions != null)
+            var data = await query.ToListAsync();
+            int count = await query.CountAsync();
+
+            IPaginatedList<TEntity> listOfEntities = new PaginatedList<TEntity>
             {
-                IOrderedQueryable<TEntity> orderedQuery = null;
-                for (var i = 0; i < sortExpressions.Count(); i++)
-                {
-                    if (i == 0)
-                    {
-                        if (sortExpressions[i].SortDirection == ListSortDirection.Ascending)
-                        {
-                            orderedQuery = query.OrderBy(sortExpressions[i].SortBy);
-                        }
-                        else
-                        {
-                            orderedQuery = query.OrderByDescending(sortExpressions[i].SortBy);
-                        }
-                    }
-                    else
-                    {
-                        if (sortExpressions[i].SortDirection == ListSortDirection.Ascending)
-                        {
-                            orderedQuery = orderedQuery.ThenBy(sortExpressions[i].SortBy);
-                        }
-                        else
-                        {
-                            orderedQuery = orderedQuery.ThenByDescending(sortExpressions[i].SortBy);
-                        }
+                Page = page,
+                PageSize = pageSize,
+                CountItems = count,
+                TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+                Data = data
+            };
 
-                    }
-                }
-
-                if (page != null)
-                {
-                    query = orderedQuery.Skip(((int)page - 1) * (int)pageSize);
-                }
-            }
-
-            if (pageSize != null)
-            {
-                query = query.Take((int)pageSize);
-            }
-
-            return await query.ToListAsync();
+            return listOfEntities;
         }
-
-        //GET ALL ENTITIES
-
-
-        //public async Task<IPaginatedList<TEntity>> GetAll(
-        //        Expression<Func<TEntity, bool>> filter = null,
-        //        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        //        IEnumerable<Expression<Func<TEntity, object>>> includes = null,
-        //        int? page = null, int? pageSize = null)
-        //{
-
-        //    var query = dbSet.AsQueryable();
-        //    if (includes != null)
-        //    {
-        //        query = includes.Aggregate(query, (current, include) => current.Include(include));
-        //    }
-
-        //    int totalCount = query.Count();
-        //    int filteredCount = totalCount;
-
-        //    if (filter != null)
-        //    {
-        //        query = query.Where(filter);
-        //        filteredCount = query.Count();
-        //    }
-
-        //    if (orderBy != null)
-        //    {
-        //        query = orderBy(query);
-        //    }
-        //    if (page != null && pageSize != null)
-        //    {
-        //        query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
-        //        ;
-        //    }
-
-        //    var pageData = await query.ToListAsync();
-
-        //    IPaginatedList<TEntity> listOfEntities = new EntityList<TEntity>
-        //    {
-        //        TotalCount = totalCount,
-        //        FilteredCount = filteredCount,
-        //        PageData = pageData,
-        //    };
-
-        //    return listOfEntities;
-        //}
 
         //GET ENTITY BY ID
         public async Task<TEntity> GetById(object id)

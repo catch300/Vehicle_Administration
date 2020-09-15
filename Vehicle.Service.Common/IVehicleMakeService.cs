@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Vehicle.Model;
 using Vehicle.Model.Common;
 
+using Vehicle.Common.PagingFilteringSorting;
+
 namespace Vehicle.Service.Common
 {
     public interface IVehicleMakeService
     {
-        Task<IEnumerable<IVehicleMake>> GetVehicleMakes( );
+        Task<IPaginatedList<IVehicleMake>> GetVehicleMakes( );
         Task<IVehicleMake> GetById(object id);
         Task<int> Add(IVehicleMake entityToInsert);
 

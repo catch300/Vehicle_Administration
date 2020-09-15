@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
-
 class CountryList extends React.Component {
 
     componentDidMount() {

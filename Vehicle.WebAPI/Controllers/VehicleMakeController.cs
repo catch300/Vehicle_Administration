@@ -34,12 +34,12 @@ namespace Vehicle.WebAPI.Controllers
 
         // GET: api/VehicleMake
         [HttpGet]
-        public async Task<IEnumerable<VehicleMakeVM>> GetVehicleMakes()
+        public async Task<IPaginatedList<VehicleMake>> GetVehicleMakes([FromQuery] int pageNumber, int? pageSize)
         {
-            var vehicleMakes = await _unitOfWork.Repository<VehicleMake>().GetAll();
-            var mapper = _mapper.Map<IEnumerable<VehicleMakeVM>>(vehicleMakes);
-
-            return mapper;
+            
+            var vehicleMakes = await _unitOfWork.Repository<VehicleMake>().GetAll(null, null,null, pageNumber, pageSize);
+            
+            return vehicleMakes;
         }
 
         // GET: api/VehicleMake/5

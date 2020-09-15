@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Vehicle.Common.PagingFilteringSorting;
 using Vehicle.Model;
 using Vehicle.Model.Common;
 using Vehicle.Repository.Common;
@@ -22,7 +23,7 @@ namespace Vehicle.Service
         }
 
         //GET ALL
-        public async Task<IEnumerable<IVehicleMake>> GetVehicleMakes( )
+        public async Task<IPaginatedList<IVehicleMake>> GetVehicleMakes( )
         {
             return await  _vehicleMakeRepository.GetAll();
         }

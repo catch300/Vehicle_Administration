@@ -45,5 +45,5 @@ class CountryService {
         const response = await fetch(request);
         return response;
     }
-
+}
     export default CountryService;
